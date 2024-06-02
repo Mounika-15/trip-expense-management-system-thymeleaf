@@ -6,6 +6,8 @@ import com.learning.tripexpensemanagementsystem.entity.Trip;
 import java.util.List;
 
 public interface TripService {
+    Trip getById(Long id);
+
     List<Trip> getAll();
 
     Trip add(AddTripRequestDto addTripRequestDto);

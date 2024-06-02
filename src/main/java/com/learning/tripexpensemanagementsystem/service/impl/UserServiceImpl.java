@@ -77,4 +77,10 @@ public class UserServiceImpl implements UserService {
                 .build());
         return userMapper.userToUserDto(savedUser);
     }
+
+    @Override
+    public User getById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("USER_NOT_FOUND", "User not found with id: " + id));
+    }
 }

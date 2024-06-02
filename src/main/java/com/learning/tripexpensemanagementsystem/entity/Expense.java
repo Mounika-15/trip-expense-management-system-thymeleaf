@@ -25,6 +25,9 @@ public class Expense {
 
     @ManyToOne
     @JoinColumn(name = "trip_id")
-    @JsonIgnore
     private Trip trip;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }

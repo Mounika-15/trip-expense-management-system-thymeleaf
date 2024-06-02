@@ -59,7 +59,8 @@ public class TripServiceImpl implements TripService {
         }
     }
 
-    private Trip getById(Long id) {
+    @Override
+    public Trip getById(Long id) {
         return tripRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("TRIP_NOT_FOUND", "Trip details not found with id: " + id));
     }
