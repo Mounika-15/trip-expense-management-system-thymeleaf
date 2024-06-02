@@ -8,7 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -26,10 +26,10 @@ public class Trip {
     private String destination;
 
     @Column(name = "start_date", nullable = false)
-    private Instant startDate;
+    private Date startDate;
 
     @Column(name = "end_date", nullable = false)
-    private Instant endDate;
+    private Date endDate;
 
     @OneToMany(mappedBy = "trip", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonIgnoreProperties("trip")
