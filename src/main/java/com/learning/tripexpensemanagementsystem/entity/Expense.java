@@ -1,4 +1,4 @@
-package com.learning.tripexpensesmanagementsystem.entity;
+package com.learning.tripexpensemanagementsystem.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;

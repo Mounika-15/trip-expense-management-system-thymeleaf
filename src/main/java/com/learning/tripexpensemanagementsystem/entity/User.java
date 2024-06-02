@@ -1,4 +1,4 @@
-package com.learning.tripexpensesmanagementsystem.entity;
+package com.learning.tripexpensemanagementsystem.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
