@@ -8,10 +8,12 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
@@ -35,7 +37,10 @@ public class SpringSecurityConfig {
                     new AntPathRequestMatcher("/swagger-ui.html"),
                     new AntPathRequestMatcher("/v3/api-docs/**"),
                     new AntPathRequestMatcher("/swagger-resources/**"),
-                    new AntPathRequestMatcher("/public/**")).permitAll();
+                    new AntPathRequestMatcher("/public/**"),
+                    new AntPathRequestMatcher("/static/**"),
+                    new AntPathRequestMatcher("/resources/**"),
+                    new AntPathRequestMatcher("/.*.css")).permitAll();
             authorize.anyRequest().authenticated();
         }).httpBasic(Customizer.withDefaults());
 

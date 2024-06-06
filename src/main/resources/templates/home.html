@@ -1,0 +1,236 @@
+<!-- Example using Thymeleaf to render trips -->
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <style>
+        .trip-container {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+
+        .expenses-container {
+            margin-top: 10px;
+            padding-left: 20px;
+        }
+
+        .expense {
+            border: 1px solid #ddd;
+            padding: 5px;
+            margin-bottom: 10px;
+        }
+
+        /* Optional: Style input fields */
+        input[type="text"] {
+            width: 200px;
+            margin-right: 10px;
+            margin-bottom: 5px;
+        }
+
+        /* Optional: Style labels */
+        label {
+            font-weight: bold;
+            margin-right: 5px;
+        }
+
+        .add-expense-form {
+            display: none;
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Welcome to the Trip Management System</h1>
+    <nav>
+        <ul>
+            <li><a th:href="@{/api/user/home}">Home</a></li>
+        </ul>
+    </nav>
+</header>
+<main>
+    <input type="hidden" id="token" th:value="${token}"/>
+    <section id="trips">
+        <h2>All Trips</h2>
+        <div th:each="trip : ${trips}">
+            <div class="trip-container">
+                <div>
+                    <input type="hidden" th:id="tripId" th:value="${trip.id}">
+                </div>
+                <div>
+                    <label>Destination:</label>
+                    <input type="text" th:value="${trip.destination}">
+                </div>
+                <div>
+                    <label>Start Date:</label>
+                    <input type="text" th:value="${trip.startDate}">
+                </div>
+                <div>
+                    <label>End Date:</label>
+                    <input type="text" th:value="${trip.endDate}">
+                </div>
+                <div class="expenses-container">
+                    <div th:each="expense : ${trip.expenses}" class="expense">
+                        <h4>Expense</h4>
+                        <div>
+                            <label>Expense ID:</label>
+                            <input type="hidden" th:id="'expense-id-' + ${expense.id}" th:value="${expense.id}"
+                                   disabled>
+                        </div>
+                        <div>
+                            <label>Description:</label>
+                            <input type="text" th:id="'description-' + ${expense.id}" th:value="${expense.description}">
+                        </div>
+                        <div>
+                            <label>Amount:</label>
+                            <input type="text" th:id="'amount-' + ${expense.id}" th:value="${expense.amount}">
+                        </div>
+                        <div class="expense-actions">
+                            <!-- Update Button -->
+                            <button th:attr="data-expense-id=${expense.id}" onclick="updateExpense(this)">Update
+                            </button>
+                            <!-- Delete Button -->
+                            <button th:attr="data-expense-id=${expense.id}" onclick="deleteExpense(this)">Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <button th:attr="data-expense-id=${trip.id}" onclick="showAddExpenseForm(this)">Add Expense</button>
+
+                <div th:id="'add-expense-form-' + ${trip.id}" class="add-expense-form">
+                    <h4>Add New Expense</h4>
+                    <div>
+                        <label>Description:</label>
+                        <input type="text" th:id="'new-description-' + ${trip.id}">
+                    </div>
+                    <div>
+                        <label>Amount:</label>
+                        <input type="text" th:id="'new-amount-' + ${trip.id}">
+                    </div>
+                    <button th:attr="add-expense-tripId=${trip.id}" onclick="addExpense(this)">Add</button>
+                </div>
+            </div>
+        </div>
+        <script>
+            function showAddExpenseForm(button) {
+                const tripId = button.getAttribute('data-expense-id');
+                console.log(tripId);
+                const formId = 'add-expense-form-' + tripId;
+                const form = document.getElementById(formId);
+                if (form) {
+                    form.style.display = 'block';
+                } else {
+                    console.error(`Form with ID '${formId}' not found.`);
+                }
+            }
+
+            function addExpense(button) {
+                const tripId = button.getAttribute('add-expense-tripId');
+                const description = document.getElementById(`new-description-${tripId}`).value;
+                const amount = document.getElementById(`new-amount-${tripId}`).value;
+                const token = document.getElementById("token").value;
+                const userId = document.getElementById("userId").value;
+                console.log(userId);
+
+                const expense = {
+                    tripId: tripId,
+                    userId: userId,
+                    description: description,
+                    amount: amount
+                };
+
+                const apiUrl = 'http://localhost:8080/api/expenses';
+
+                fetch(apiUrl, {
+                    method: 'POST',
+                    body: JSON.stringify(expense),
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': token
+                    }
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            alert('Expense added successfully!');
+                            window.location.reload(); // Reload the page to see the new expense
+                        } else {
+                            throw new Error('Failed to add expense');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error adding expense:', error);
+                        alert('Failed to add expense.');
+                    });
+            }
+
+            function updateExpense(button) {
+                const expenseId = button.getAttribute('data-expense-id');
+                const description = document.getElementById(`description-${expenseId}`).value;
+                const amount = document.getElementById(`amount-${expenseId}`).value;
+                const expense = {
+                    id: expenseId,
+                    description: description,
+                    amount: amount
+                };
+                const token = document.getElementById("token").value;
+                const updateApiUrl = 'http://localhost:8080/api/expenses/' + expenseId;
+
+                fetch(updateApiUrl, {
+                    method: 'PUT',
+                    body: JSON.stringify(expense),
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': token
+                    }
+                })
+                    .then(response => {
+                        response.json()
+                    })
+                    .catch(error => console.error('Error calling api: ', error))
+            }
+
+            function deleteExpense(button) {
+                const expenseId = button.getAttribute('data-expense-id');
+
+                const deleteApiUrl = 'http://localhost:8080/api/expenses/' + expenseId;
+
+                fetch(deleteApiUrl, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': document.getElementById("token").value
+                    }
+                })
+                    .then(response => {
+                        window.location.reload();
+                    })
+                    .catch(error => console.log(error))
+            }
+        </script>
+    </section>
+
+    <section id="user-details">
+        <h2>User Details</h2>
+        <div>
+            <input type="hidden" th:id="userId" th:value="${user.id}">
+        </div>
+        <div>
+            <label id="username">Username</label>
+            <input type="text" th:id="username" th:value="${user.username}" disabled>
+        </div>
+        <div>
+            <label id="role">Role</label>
+            <input type="text" th:id="role" th:value="${user.role}">
+        </div>
+    </section>
+</main>
+<footer>
+    <p>&copy; 2024 Trip Management System</p>
+</footer>
+</body>
+</html>

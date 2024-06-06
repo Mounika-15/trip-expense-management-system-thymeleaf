@@ -1,0 +1,30 @@
+/* CSS code for styling trip and expense containers */
+.trip-container {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
+.expenses-container {
+    margin-top: 10px;
+    padding-left: 20px;
+}
+
+.expense {
+    border: 1px solid #ddd;
+    padding: 5px;
+    margin-bottom: 10px;
+}
+
+/* Optional: Style input fields */
+input[type="text"] {
+    width: 200px;
+    margin-right: 10px;
+    margin-bottom: 5px;
+}
+
+/* Optional: Style labels */
+label {
+    font-weight: bold;
+    margin-right: 5px;
+}
